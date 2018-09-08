@@ -59,6 +59,36 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+  
+  output$plot <- renderPlotly({
+    
+    # Filter plot data based on passenger class and age range inputs
+    min_age <- input$age_range[1]
+    max_age <- input$age_range[2]
+    plot_data <- filter(titanic_data, Pclass %in% input$pclass_select, Age >= min_age, Age <= max_age)
+    
+    # Define function (used by ggplot) that customizes text displayed for 0/1 Survived label
+    get_label_for_Survived_column <- function(variable, value){
+      ifelse(value == "1", "Survived", "Did not survive")
+    }
+    
+    plot <- ggplot() +
+      geom_jitter(data = plot_data, aes(Pclass, Age, colour = factor(Sex), text = paste0("Age: ", Age, "<br>",
+                                                                                         "Class: ", Pclass, "<br>",
+                                                                                         "Sex: ", Sex ))) + 
+      facet_grid(Survived ~ ., labeller = get_label_for_Survived_column) +
+      # show integral values on x axis
+      scale_x_continuous(breaks = function(x) seq(max(x))) + 
+      scale_color_brewer(palette = "Set1") +
+      # configure axis/legend labels and themes
+      ggtitle("Survival of Titanic Passengers : by Age, Sex, Passenger Class") +
+      xlab("Passenger Class") +
+      labs(color = "Sex") +
+      theme_gray()
+    
+    ggplotly(plot, tooltip = "text") %>%
+      layout(legend = list(orientation = "h", x = 0, y = -0.1))
+  })
 }
 
 # Run the application 
