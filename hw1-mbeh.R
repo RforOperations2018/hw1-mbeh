@@ -37,9 +37,9 @@ ui <- fluidPage(
       # sliding range input for defining min/max passenger age
       sliderInput("age_range", 
                   "Age Range:",
-                  min = 0, 
-                  max = 100, 
-                  value = c(0,100)
+                  min = 0,  # So users can't make filters that have no data I would do this in the future min(titantic_data$Age, na.rm = T)
+                  max = 100, # Like wise: max(titantic_data$Age, na.rm = T)
+                  value = c(0,100) # c(min(titantic_data$Age, na.rm = T),max(titantic_data$Age, na.rm = T))
       )
     ),
     mainPanel(
@@ -110,4 +110,3 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
-
