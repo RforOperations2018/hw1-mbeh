@@ -1,13 +1,16 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
+# Homework 1
+# By Min Yan BEH (mbeh)
+
+# If titanic dataset doesn't exist, run code below:
+# install.packages("titanic")
 
 library(shiny)
+library(reshape2)
+library(dplyr)
+library(plotly)
+library(DT)
+library(plyr)
+library(titanic)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
