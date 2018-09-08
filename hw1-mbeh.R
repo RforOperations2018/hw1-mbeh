@@ -87,7 +87,7 @@ server <- function(input, output) {
       theme_gray()
     
     ggplotly(plot, tooltip = "text") %>%
-      layout(height = 800, legend = list(orientation = "h", x = 0, y = -0.1))
+      layout(height = 600, legend = list(orientation = "h", x = 0, y = -0.1))
   })
   
   output$table <- DT::renderDataTable({
