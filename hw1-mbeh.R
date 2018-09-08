@@ -89,6 +89,23 @@ server <- function(input, output) {
     ggplotly(plot, tooltip = "text") %>%
       layout(legend = list(orientation = "h", x = 0, y = -0.1))
   })
+  
+  output$table <- DT::renderDataTable({
+    min_age <- input$age_range[1]
+    max_age <- input$age_range[2]
+    
+    # Customize text displayed for 0/1 Survived label: "Yes"/"No"
+    titanic_data %>% mutate(Survived = plyr::revalue(as.character(Survived), c("0" = "No", "1" = "Yes"))) %>%
+      
+      # Filter table data based on passenger class and age range inputs
+      filter(Pclass %in% input$pclass_select, Age >= min_age, Age <= max_age) %>% 
+      
+      # Define list of data columns used by table
+      subset(select = c("Name", "Sex", "Age", "Pclass", "Survived"))
+  }, 
+  # Modify Passenger Class column name for readability
+  colnames = c("Name", "Sex", "Age", "Passenger Class", "Survived")
+  )
 }
 
 # Run the application 
