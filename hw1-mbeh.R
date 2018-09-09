@@ -14,6 +14,8 @@ library(titanic)
 
 # Use only train data as test data doesn't have Survived label
 titanic_data <- titanic_train
+min_age <- min(titanic_data$Age, na.rm = T)
+max_age <- max(titanic_data$Age, na.rm = T)
 pdf(NULL)
 
 
@@ -29,17 +31,17 @@ ui <- fluidPage(
       # selection input for passenger class
       selectInput("pclass_select",
                   "Passenger Class:",
-                  choices = as.character(seq(3)),
+                  choices = paste("Class", as.character(seq(3))),
                   multiple = TRUE,
                   selectize = TRUE,
-                  selected = as.character(seq(3))),
+                  selected = paste("Class", as.character(seq(3)))),
       
       # sliding range input for defining min/max passenger age
       sliderInput("age_range", 
                   "Age Range:",
-                  min = 0,  # So users can't make filters that have no data I would do this in the future min(titantic_data$Age, na.rm = T)
-                  max = 100, # Like wise: max(titantic_data$Age, na.rm = T)
-                  value = c(0,100) # c(min(titantic_data$Age, na.rm = T),max(titantic_data$Age, na.rm = T))
+                  min = min_age,  # So users can't make filters that have no data I would do this in the future min(titantic_data$Age, na.rm = T)
+                  max = max_age, # Like wise: max(titantic_data$Age, na.rm = T)
+                  value = c(min_age, max_age) # c(min(titantic_data$Age, na.rm = T),max(titantic_data$Age, na.rm = T))
       )
     ),
     mainPanel(
@@ -65,7 +67,8 @@ server <- function(input, output) {
     # Filter plot data based on passenger class and age range inputs
     min_age <- input$age_range[1]
     max_age <- input$age_range[2]
-    plot_data <- filter(titanic_data, Pclass %in% input$pclass_select, Age >= min_age, Age <= max_age)
+    plot_data <- filter(titanic_data, paste("Class", Pclass) %in% input$pclass_select, 
+                        Age >= min_age, Age <= max_age)
     
     # Define function (used by ggplot) that customizes text displayed for 0/1 Survived label
     get_label_for_Survived_column <- function(variable, value){
@@ -98,7 +101,7 @@ server <- function(input, output) {
     titanic_data %>% mutate(Survived = plyr::revalue(as.character(Survived), c("0" = "No", "1" = "Yes"))) %>%
       
       # Filter table data based on passenger class and age range inputs
-      filter(Pclass %in% input$pclass_select, Age >= min_age, Age <= max_age) %>% 
+      filter(paste("Class", Pclass) %in% input$pclass_select, Age >= min_age, Age <= max_age) %>% 
       
       # Define list of data columns used by table
       subset(select = c("Name", "Sex", "Age", "Pclass", "Survived"))
